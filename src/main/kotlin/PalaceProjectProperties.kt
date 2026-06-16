@@ -1,5 +1,4 @@
 data class PalaceProjectProperties(
-  val adobeDrmEnabled: Boolean,
   val androidSdkCompile: Int,
   val androidSdkMinimum: Int,
   val androidSdkTarget: Int,
@@ -36,7 +35,6 @@ data class PalaceProjectProperties(
       fun bool(key: String): Boolean = string(key).toBooleanStrict()
 
       return PalaceProjectProperties(
-        adobeDrmEnabled = bool("org.thepalaceproject.adobeDRM.enabled"),
         androidSdkCompile = int("org.thepalaceproject.build.androidSDKCompile"),
         androidSdkMinimum = int("org.thepalaceproject.build.androidSDKMinimum"),
         androidSdkTarget = int("org.thepalaceproject.build.androidSDKTarget"),
