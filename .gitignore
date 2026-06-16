@@ -11,3 +11,5 @@ palace-*/build
 secrets.conf
 *~
 .env
+build
+ktlint.jar
