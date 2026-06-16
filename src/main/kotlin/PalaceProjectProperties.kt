@@ -30,9 +30,18 @@ data class PalaceProjectProperties(
         map[key]?.toString()
           ?: error("Missing required property: $key")
 
-      fun int(key: String): Int = string(key).toInt()
+      fun int(key: String): Int {
+        return string(key).toInt()
+      }
 
-      fun bool(key: String): Boolean = string(key).toBooleanStrict()
+      fun bool(key: String): Boolean {
+        return string(key).toBooleanStrict()
+      }
+
+      fun boolOrDefault(key: String, default: Boolean): Boolean {
+        val value = map[key] ?: return default
+        return value.toString().toBooleanStrict()
+      }
 
       return PalaceProjectProperties(
         androidSdkCompile = int("org.thepalaceproject.build.androidSDKCompile"),
@@ -40,7 +49,7 @@ data class PalaceProjectProperties(
         androidSdkTarget = int("org.thepalaceproject.build.androidSDKTarget"),
         checkSemanticVersioning = bool("org.thepalaceproject.build.checkSemanticVersioning"),
         enableKtLint = bool("org.thepalaceproject.build.enableKtLint"),
-        enableSigning = bool("org.thepalaceproject.build.enableSigning"),
+        enableSigning = boolOrDefault("org.thepalaceproject.build.enableSigning", false),
         group = string("GROUP"),
         jdkBuild = int("org.thepalaceproject.build.jdkBuild"),
         jdkBytecodeTarget = int("org.thepalaceproject.build.jdkBytecodeTarget"),
