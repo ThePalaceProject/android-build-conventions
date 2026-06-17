@@ -187,7 +187,14 @@ object PalaceConfiguration {
 
     project.afterEvaluate {
       this.configurations.forEach { cfg ->
-        cfg.isTransitive = transitiveConfigurations.contains(cfg.name)
+        var transitive = false
+        if (transitiveConfigurations.contains(cfg.name)) {
+          transitive = true
+        }
+        if (cfg.name.contains("lint", ignoreCase = true)) {
+          transitive = true
+        }
+        cfg.isTransitive = transitive
       }
     }
   }
@@ -248,9 +255,9 @@ object PalaceConfiguration {
         this.artifactId = properties.pomArtifactId
         this.version = properties.versionName
 
-      /*
-       * https://central.sonatype.org/publish/requirements/#sufficient-metadata
-       */
+        /*
+         * https://central.sonatype.org/publish/requirements/#sufficient-metadata
+         */
 
         this.pom {
           this.name.set(properties.pomName)
