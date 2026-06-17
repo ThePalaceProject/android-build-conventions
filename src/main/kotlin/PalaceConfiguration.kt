@@ -10,7 +10,9 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 object PalaceConfiguration {
   enum class PackagingType {
@@ -48,6 +50,19 @@ object PalaceConfiguration {
     properties: PalaceProjectProperties,
   ) {
     ex.jvmToolchain(properties.jdkBuild)
+    ex.compilerOptions {
+      jvmTarget.set(JvmTarget.fromTarget(properties.jdkBytecodeTarget.toString()))
+    }
+  }
+
+  fun configureKotlinJVM(
+    ex: KotlinJvmExtension,
+    properties: PalaceProjectProperties,
+  ) {
+    ex.jvmToolchain(properties.jdkBuild)
+    ex.compilerOptions {
+      jvmTarget.set(JvmTarget.fromTarget(properties.jdkBytecodeTarget.toString()))
+    }
   }
 
   /**

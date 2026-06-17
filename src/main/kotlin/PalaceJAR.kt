@@ -3,6 +3,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.internal.extensions.core.extra
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 class PalaceJAR : Plugin<Project> {
   override fun apply(project: Project) {
@@ -13,6 +14,9 @@ class PalaceJAR : Plugin<Project> {
     project.pluginManager.apply("org.jetbrains.kotlin.jvm")
     project.extensions.configure(JavaPluginExtension::class.java) {
       PalaceConfiguration.configureJava(this, properties)
+    }
+    project.extensions.configure(KotlinJvmExtension::class.java) {
+      PalaceConfiguration.configureKotlinJVM(this, properties)
     }
     PalaceConfiguration.configureDisableTransitiveDependencies(project)
     PalaceConfiguration.configureDisableTests(project)
