@@ -9,7 +9,8 @@ class PalaceJAR : Plugin<Project> {
     val properties = PalaceProjectProperties.fromMap(project.extra.properties)
 
     project.version = properties.versionName
-    project.pluginManager.apply("java")
+    project.pluginManager.apply("java-library")
+    project.pluginManager.apply("org.jetbrains.kotlin.jvm")
     project.extensions.configure(JavaPluginExtension::class.java) {
       PalaceConfiguration.configureJava(this, properties)
     }
