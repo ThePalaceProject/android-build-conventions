@@ -292,7 +292,7 @@ object PalaceConfiguration {
 
     when (packagingType) {
       PackagingType.JAR -> {
-        TODO()
+        publication.from(project.components.getByName("java"))
       }
 
       /*
