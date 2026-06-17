@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -92,6 +93,29 @@ object PalaceConfiguration {
           test.useJUnitPlatform()
         }
       }
+    }
+  }
+
+  /**
+   * Configure the properties necessary to produce an Android APK.
+   */
+
+  fun configureAndroidApplication(
+    ex: ApplicationExtension,
+    properties: PalaceProjectProperties,
+  ) {
+    ex.namespace =
+      properties.pomArtifactId
+    ex.compileSdk =
+      properties.androidSdkCompile
+    ex.defaultConfig.minSdk =
+      properties.androidSdkMinimum
+
+    ex.compileOptions {
+      this.encoding = "UTF-8"
+      this.isCoreLibraryDesugaringEnabled = true
+      this.sourceCompatibility = JavaVersion.toVersion(properties.jdkBytecodeTarget)
+      this.targetCompatibility = JavaVersion.toVersion(properties.jdkBytecodeTarget)
     }
   }
 
@@ -286,7 +310,19 @@ object PalaceConfiguration {
       }
 
       PackagingType.APK -> {
-        TODO()
+        project.extensions.configure(ApplicationExtension::class.java) {
+          this.publishing {
+            this.singleVariant("release") {
+              if (properties.publishSources) {
+                this.withSourcesJar()
+              }
+            }
+          }
+        }
+
+        project.afterEvaluate {
+          publication.from(components.getByName("release"))
+        }
       }
 
       PackagingType.POM -> {
