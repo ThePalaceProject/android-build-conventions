@@ -10,6 +10,7 @@ class PalaceAAR : Plugin<Project> {
   override fun apply(project: Project) {
     val properties = PalaceProjectProperties.fromMap(project.extra.properties)
 
+    project.version = properties.versionName
     project.pluginManager.apply("com.android.library")
     project.extensions.configure(KotlinAndroidExtension::class.java) {
       PalaceConfiguration.configureKotlin(this, properties)
