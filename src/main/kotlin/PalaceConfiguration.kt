@@ -235,6 +235,17 @@ object PalaceConfiguration {
   ) {
     val palaceDeployDirectory =
       "${project.rootDir}/maven"
+
+    when (packagingType) {
+      PackagingType.POM,
+      PackagingType.JAR -> {
+        // Allowed.
+      }
+
+      PackagingType.AAR,
+      PackagingType.APK -> return
+    }
+
     val mavenCentralUsername =
       (project.findProperty("mavenCentralUsername") ?: "") as String
     val mavenCentralPassword =
