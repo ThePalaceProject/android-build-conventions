@@ -150,12 +150,20 @@ object PalaceConfiguration {
 
     val transitiveConfigurations =
       setOf(
+        "androidTestDebugCompileSync",
+        "androidTestDebugCompileSyncImplementationDependenciesMetadata",
         "androidTestDebugImplementation",
         "androidTestDebugImplementationDependenciesMetadata",
         "androidTestImplementation",
         "androidTestImplementationDependenciesMetadata",
+        "androidTestReleaseCompileSync",
+        "androidTestReleaseCompileSyncImplementationDependenciesMetadata",
         "androidTestReleaseImplementation",
         "androidTestReleaseImplementationDependenciesMetadata",
+        "debugCompileSync",
+        "debugCompileSyncImplementationDependenciesMetadata",
+        "releaseCompileSync",
+        "releaseCompileSyncImplementationDependenciesMetadata",
         "annotationProcessor",
         "coreLibraryDesugaring",
         "debugAndroidTestCompilationImplementation",
