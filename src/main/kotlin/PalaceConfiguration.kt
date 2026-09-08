@@ -240,7 +240,8 @@ object PalaceConfiguration {
     when (packagingType) {
       PackagingType.JAR,
       PackagingType.AAR,
-      PackagingType.POM -> {
+      PackagingType.POM,
+      -> {
         // Allowed.
       }
 
