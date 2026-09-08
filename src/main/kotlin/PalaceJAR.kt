@@ -18,7 +18,7 @@ class PalaceJAR : Plugin<Project> {
     project.extensions.configure(KotlinJvmExtension::class.java) {
       PalaceConfiguration.configureKotlinJVM(this, properties)
     }
-    PalaceConfiguration.configureDisableTransitiveDependencies(project)
+    PalaceConfiguration.configureDependencyResolution(project)
     PalaceConfiguration.configureDisableTests(project)
     PalaceConfiguration.configurePublishing(properties, project, JAR)
   }

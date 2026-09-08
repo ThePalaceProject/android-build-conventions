@@ -20,7 +20,7 @@ class PalaceAPK : Plugin<Project> {
     project.extensions.configure(ApplicationExtension::class.java) {
       PalaceConfiguration.configureAndroidApplication(this, properties)
     }
-    PalaceConfiguration.configureDisableTransitiveDependencies(project)
+    PalaceConfiguration.configureDependencyResolution(project)
     PalaceConfiguration.configureDisableTests(project)
     PalaceConfiguration.configurePublishing(
       properties,

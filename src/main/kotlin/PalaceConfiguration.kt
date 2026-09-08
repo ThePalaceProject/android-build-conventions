@@ -135,90 +135,37 @@ object PalaceConfiguration {
   }
 
   /**
-   * Disable transitive dependency handling. Android dependency trees are too large and too
-   * riddled with conflicts for transitive dependency handling to work. Instead, modules must
-   * explicitly depend on dependencies and application bundles are forced to list every single
-   * module upon which they depend.
+   * Configure dependency resolution. Transitive dependency resolution is enabled for all
+   * configurations (the Gradle default). A small number of published library POMs still
+   * reference stale coordinates that duplicate coordinates which are declared directly; those
+   * stale coordinates are excluded from every configuration so that only the canonical
+   * coordinate is present in the resolved closure.
    */
 
-  fun configureDisableTransitiveDependencies(project: Project) {
+  fun configureDependencyResolution(project: Project) {
     /*
-     * The dependency configurations that are allowed to be transitive. Most of these are present
-     * just because the various Android build system garbage will break catastrophically if
-     * transitive dependencies aren't allowed.
+     * Stale coordinates to exclude. Each entry is a duplicate of a canonical coordinate that is
+     * declared directly elsewhere; the canonical coordinate is the one that must remain.
+     *
+     *   com.android.support:*
+     *     -> replaced by the corresponding androidx.* artifacts (Jetifier is not used).
+     *   com.github.stephenc.jcip:jcip-annotations
+     *     -> com.io7m.jcip:com.io7m.jcip
+     *   com.io7m.junreachable:io7m-junreachable-core
+     *     -> com.io7m.junreachable:com.io7m.junreachable.core
+     *   com.google.android.exoplayer:exoplayer-core
+     *     -> org.thepalaceproject.exoplayer:exoplayer-core
      */
-
-    val transitiveConfigurations =
-      setOf(
-        "androidTestDebugCompileSync",
-        "androidTestDebugCompileSyncImplementationDependenciesMetadata",
-        "androidTestDebugImplementation",
-        "androidTestDebugImplementationDependenciesMetadata",
-        "androidTestImplementation",
-        "androidTestImplementationDependenciesMetadata",
-        "androidTestReleaseCompileSync",
-        "androidTestReleaseCompileSyncImplementationDependenciesMetadata",
-        "androidTestReleaseImplementation",
-        "androidTestReleaseImplementationDependenciesMetadata",
-        "debugCompileSync",
-        "debugCompileSyncImplementationDependenciesMetadata",
-        "releaseCompileSync",
-        "releaseCompileSyncImplementationDependenciesMetadata",
-        "annotationProcessor",
-        "coreLibraryDesugaring",
-        "debugAndroidTestCompilationImplementation",
-        "debugAndroidTestImplementation",
-        "debugAndroidTestImplementationDependenciesMetadata",
-        "debugAnnotationProcessor",
-        "debugAnnotationProcessorClasspath",
-        "debugUnitTestCompilationImplementation",
-        "debugUnitTestImplementation",
-        "debugUnitTestImplementationDependenciesMetadata",
-        "kotlinBuildToolsApiClasspath",
-        "kotlinCompilerClasspath",
-        "kotlinCompilerPluginClasspath",
-        "kotlinCompilerPluginClasspathDebug",
-        "kotlinCompilerPluginClasspathDebugAndroidTest",
-        "kotlinCompilerPluginClasspathDebugUnitTest",
-        "kotlinCompilerPluginClasspathMain",
-        "kotlinCompilerPluginClasspathRelease",
-        "kotlinCompilerPluginClasspathReleaseUnitTest",
-        "kotlinCompilerPluginClasspathTest",
-        "kotlinKlibCommonizerClasspath",
-        "kotlinNativeCompilerPluginClasspath",
-        "kotlinScriptDef",
-        "kotlinScriptDefExtensions",
-        "mainSourceElements",
-        "releaseAnnotationProcessor",
-        "releaseAnnotationProcessorClasspath",
-        "releaseUnitTestCompilationImplementation",
-        "releaseUnitTestImplementation",
-        "releaseUnitTestImplementationDependenciesMetadata",
-        "testDebugImplementation",
-        "testDebugImplementationDependenciesMetadata",
-        "testFixturesDebugImplementation",
-        "testFixturesDebugImplementationDependenciesMetadata",
-        "testFixturesImplementation",
-        "testFixturesImplementationDependenciesMetadata",
-        "testFixturesReleaseImplementation",
-        "testFixturesReleaseImplementationDependenciesMetadata",
-        "testImplementation",
-        "testImplementationDependenciesMetadata",
-        "testReleaseImplementation",
-        "testReleaseImplementationDependenciesMetadata",
+    val exclusions: List<Map<String, String>> =
+      listOf(
+        mapOf("group" to "com.android.support"),
+        mapOf("group" to "com.github.stephenc.jcip", "module" to "jcip-annotations"),
+        mapOf("group" to "com.io7m.junreachable", "module" to "io7m-junreachable-core"),
+        mapOf("group" to "com.google.android.exoplayer", "module" to "exoplayer-core"),
       )
 
-    project.afterEvaluate {
-      this.configurations.forEach { cfg ->
-        var transitive = false
-        if (transitiveConfigurations.contains(cfg.name)) {
-          transitive = true
-        }
-        if (cfg.name.contains("lint", ignoreCase = true)) {
-          transitive = true
-        }
-        cfg.isTransitive = transitive
-      }
+    project.configurations.configureEach {
+      exclusions.forEach { rule -> exclude(rule) }
     }
   }
 
