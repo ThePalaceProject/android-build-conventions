@@ -1,7 +1,10 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
+import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.artifacts.DependencyResolveDetails
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -164,8 +167,51 @@ object PalaceConfiguration {
         mapOf("group" to "com.google.android.exoplayer", "module" to "exoplayer-core"),
       )
 
+    /*
+     * The version catalog is the single source of truth for versions. Every occurrence of a
+     * catalog-listed module, whether declared directly or pulled in transitively, is forced to
+     * resolve to exactly the catalog version. This disables Gradle's default "highest version
+     * wins" conflict resolution for those modules. Modules that are not listed in the catalog
+     * are left to normal resolution.
+     */
+    val pinned = mutableMapOf<String, String>()
+    val catalogs = project.extensions.findByType(VersionCatalogsExtension::class.java)
+    if (catalogs != null) {
+      val catalog = catalogs.find("libs").orElse(null)
+      if (catalog != null) {
+        for (alias in catalog.getLibraryAliases()) {
+          val provider = catalog.findLibrary(alias).orElse(null)
+          if (provider == null) {
+            continue
+          }
+          val dependency = provider.get()
+          val group = dependency.module.group
+          val name = dependency.module.name
+          val version = dependency.versionConstraint.requiredVersion
+          if (group.isBlank() || name.isBlank() || version.isBlank()) {
+            continue
+          }
+          pinned[group + ":" + name] = version
+        }
+      }
+    }
+
     project.configurations.configureEach {
       exclusions.forEach { rule -> exclude(rule) }
+
+      if (pinned.isNotEmpty()) {
+        val pinAction =
+          object : Action<DependencyResolveDetails> {
+            override fun execute(details: DependencyResolveDetails) {
+              val requested = details.requested
+              val version = pinned[requested.group + ":" + requested.name]
+              if (version != null) {
+                details.useVersion(version)
+              }
+            }
+          }
+        resolutionStrategy.eachDependency(pinAction)
+      }
     }
   }
 
