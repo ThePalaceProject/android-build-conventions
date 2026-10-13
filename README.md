@@ -76,7 +76,7 @@ org.thepalaceproject.build.androidSDKMinimum=24
 org.thepalaceproject.build.checkSemanticVersioning=true
 org.thepalaceproject.build.enableKtLint=true
 org.thepalaceproject.build.jdkBytecodeTarget=11
-org.thepalaceproject.build.jdkBuild=17
+org.thepalaceproject.build.jdkBuild=25
 org.thepalaceproject.build.publishSources=true
 ```
 
